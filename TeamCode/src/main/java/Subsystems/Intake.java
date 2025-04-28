@@ -59,4 +59,10 @@ public class Intake extends Subsystem {
             return new NullCommand();
         }
     }
+
+    @Override
+    public void periodic(){
+
+
+    }
 }

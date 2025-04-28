@@ -1,5 +1,6 @@
 package Subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.rowanmcalpin.nextftc.core.Subsystem;
@@ -22,12 +23,24 @@ public class Deposit extends Subsystem {
     // USER CODE
     public MotorEx deposit;
 
+    public static double p = 0.008;
+    public static double i = 0;
+
+    public static double d = 0.001;
+
+    public static double target = 0;
+
+
+
+
+
+
     private double calculateFeedforward() {
         return Math.cos(Math.toRadians(controller.getTarget() / (537.6 / 360) )) * 0.005;
     }
     public PIDFController controller =
             new PIDFController
-                    (0.009, 0.0, 0.001,
+                    (p, i, d,
                             pos -> calculateFeedforward(),20);
 
     public String name = "deposit";
@@ -69,6 +82,22 @@ public class Deposit extends Subsystem {
     @Override
     public Command getDefaultCommand() {
         return new HoldPosition(deposit, controller, this);
+    }
+
+    @Override
+    public void periodic(){
+        target = deposit.getMotor().getTargetPosition();
+        controller.setKP(p);
+        controller.setKI(i);
+        controller.setKD(d);
+
+
+        deposit.setPower(controller.calculate(deposit.getCurrentPosition(),target));
+
+        OpModeData.telemetry.addData("target",target);
+        OpModeData.telemetry.addData("pos",deposit.getCurrentPosition());
+
+
     }
 
 }

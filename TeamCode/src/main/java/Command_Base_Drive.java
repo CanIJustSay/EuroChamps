@@ -123,14 +123,14 @@ public class Command_Base_Drive extends NextFTCOpMode {
                         })
         );
 
-        ClawIntake.INSTANCE.open().invoke();
-        RotationIntake.INSTANCE.up().invoke();
-        RotationDeposit.INSTANCE.down().invoke();
-        ClawDeposit.INSTANCE.open().invoke();
-        Intake.INSTANCE.retract().invoke();
-        Deposit.INSTANCE.getReady().invoke();
-        ClawDeposit.INSTANCE.flipUp().invoke();
-        ClawIntake.INSTANCE.rotateHorizontal();
+//        ClawIntake.INSTANCE.open().invoke();
+//        RotationIntake.INSTANCE.up().invoke();
+//        RotationDeposit.INSTANCE.down().invoke();
+//        ClawDeposit.INSTANCE.open().invoke();
+//        Intake.INSTANCE.retract().invoke();
+//        Deposit.INSTANCE.getReady().invoke();
+//        ClawDeposit.INSTANCE.flipUp().invoke();
+//        ClawIntake.INSTANCE.rotateHorizontal();
 
 
         //a button
@@ -229,6 +229,9 @@ public class Command_Base_Drive extends NextFTCOpMode {
 
         telemetry.addData("pos",Deposit.INSTANCE.deposit.getCurrentPosition());
         telemetry.addData("target",Deposit.INSTANCE.controller.getTarget());
+
+        Deposit.INSTANCE.periodic();
+
         telemetry.update();
 
     }
