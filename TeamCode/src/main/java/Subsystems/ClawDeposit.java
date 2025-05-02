@@ -32,6 +32,7 @@ public class ClawDeposit extends Subsystem {
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
+
     public Command flipUp() {
         return new ServoToPosition(rotateDeposit,
                 0.5,

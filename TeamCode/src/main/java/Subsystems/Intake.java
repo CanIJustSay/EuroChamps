@@ -22,8 +22,8 @@ public class Intake extends Subsystem {
 
     public PIDFController controller =
             new PIDFController
-                    (0.025, 0.0, 0.001,
-                            new StaticFeedforward(0.01),20);
+                    (0.026, 0.0, 0.001,
+                            new StaticFeedforward(0.01),25);
 
     public String name = "linkage";
 
@@ -38,7 +38,7 @@ public class Intake extends Subsystem {
 
     public Command extend() {
         return new RunToPosition(intake, // MOTOR TO MOVE
-                270, // TARGET POSITION, IN TICKS
+                (270*0.7150827599), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }

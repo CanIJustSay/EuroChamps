@@ -8,7 +8,7 @@ import java.util.List;
 
 public class poopline extends OpenCvPipeline {
 
-    public Scalar lowerYCrCb = new Scalar(0, 0, 171.4, 0.0);
+    public Scalar lowerYCrCb = new Scalar(171.4, 0, 0, 0.0);
     public Scalar upperYCrCb = new Scalar(255.0, 255.0, 255.0, 0.0);
     public double dx = 0;
     public double dy = 0;

@@ -16,7 +16,7 @@ public class ClawIntake extends Subsystem {
     public Servo rotateIntake;
 
     public String name = "intakeClaw";
-    public String rotate_name = "rotateIntake";
+    public String rotate_n = "rotateIntake";
 
     public Command open() {
         return new ServoToPosition(clawIntake, // SERVO TO MOVE
@@ -30,10 +30,10 @@ public class ClawIntake extends Subsystem {
                 this);
     }
 
-    public Command rotateHorizontal(){
-        return new ServoToPosition(rotateIntake,
-                0.5,
-                this);
+    public Command rotateHorizontal() {
+        return new ServoToPosition(rotateIntake, // SERVO TO MOVE
+                0.5, // POSITION TO MOVE TO
+                this); // IMPLEMENTED SUBSYSTEM
     }
 
     public Command close() {
@@ -45,7 +45,8 @@ public class ClawIntake extends Subsystem {
     @Override
     public void initialize() {
         clawIntake = OpModeData.INSTANCE.getHardwareMap().get(Servo.class, name);
-        rotateIntake = OpModeData.INSTANCE.getHardwareMap().get(Servo.class,rotate_name);
-        ClawIntake.INSTANCE.open();
+        rotateIntake = OpModeData.INSTANCE.getHardwareMap().get(Servo.class,rotate_n);
+
+
     }
 }

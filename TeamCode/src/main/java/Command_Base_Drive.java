@@ -71,6 +71,7 @@ public class Command_Base_Drive extends NextFTCOpMode {
         Intake.INSTANCE.retract().invoke();
         Deposit.INSTANCE.getReady().invoke();
         ClawDeposit.INSTANCE.flipUp().invoke();
+        ClawIntake.INSTANCE.rotateHorizontal().invoke();
 
 
 
@@ -105,8 +106,6 @@ public class Command_Base_Drive extends NextFTCOpMode {
 
         driverControlled = new MecanumDriverControlled(motors, gamepadManager.getGamepad1());
 
-
-
         driverControlled.invoke();
 
         gamepadManager.getGamepad1().getRightBumper().setPressedCommand(
@@ -123,14 +122,14 @@ public class Command_Base_Drive extends NextFTCOpMode {
                         })
         );
 
-//        ClawIntake.INSTANCE.open().invoke();
-//        RotationIntake.INSTANCE.up().invoke();
-//        RotationDeposit.INSTANCE.down().invoke();
-//        ClawDeposit.INSTANCE.open().invoke();
-//        Intake.INSTANCE.retract().invoke();
-//        Deposit.INSTANCE.getReady().invoke();
-//        ClawDeposit.INSTANCE.flipUp().invoke();
-//        ClawIntake.INSTANCE.rotateHorizontal();
+        ClawIntake.INSTANCE.open().invoke();
+        RotationIntake.INSTANCE.up().invoke();
+        RotationDeposit.INSTANCE.down().invoke();
+        ClawDeposit.INSTANCE.open().invoke();
+        Intake.INSTANCE.retract().invoke();
+        Deposit.INSTANCE.getReady().invoke();
+        ClawDeposit.INSTANCE.flipUp().invoke();
+        ClawIntake.INSTANCE.rotateHorizontal().invoke();
 
 
         //a button
@@ -142,7 +141,7 @@ public class Command_Base_Drive extends NextFTCOpMode {
                             Deposit.INSTANCE.getReady(),
                             ClawDeposit.INSTANCE.flipUp(),
                             ClawDeposit.INSTANCE.open(),
-                            ClawIntake.INSTANCE.close().thenWait(0.1),
+                            ClawIntake.INSTANCE.close().thenWait(0.5),
                             RotationIntake.INSTANCE.up().thenWait(0.3),
                             Intake.INSTANCE.retract(),
                             Deposit.INSTANCE.toTransfer(),
@@ -162,9 +161,10 @@ public class Command_Base_Drive extends NextFTCOpMode {
             gamepadManager.getGamepad2().getLeftTrigger().setPressedCommand(
                     value -> new SequentialGroup(
                             //extend linage
-                            RotationIntake.INSTANCE.down().thenWait(0.2),
                             ClawIntake.INSTANCE.open(),
+                            RotationIntake.INSTANCE.down(),
                             Intake.INSTANCE.extend()
+
 
                     )
             );
@@ -176,7 +176,7 @@ public class Command_Base_Drive extends NextFTCOpMode {
             gamepadManager.getGamepad2().getRightTrigger().setPressedCommand(
                     value -> new SequentialGroup(
                             ClawIntake.INSTANCE.close().thenWait(0.1),
-                            RotationIntake.INSTANCE.up().thenWait(0.2),
+                            RotationIntake.INSTANCE.up(),
                             Intake.INSTANCE.retract()
 
                     )
@@ -229,8 +229,6 @@ public class Command_Base_Drive extends NextFTCOpMode {
 
         telemetry.addData("pos",Deposit.INSTANCE.deposit.getCurrentPosition());
         telemetry.addData("target",Deposit.INSTANCE.controller.getTarget());
-
-        Deposit.INSTANCE.periodic();
 
         telemetry.update();
 

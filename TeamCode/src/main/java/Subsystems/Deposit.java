@@ -23,7 +23,7 @@ public class Deposit extends Subsystem {
     // USER CODE
     public MotorEx deposit;
 
-    public static double p = 0.008;
+    public static double p = 0.009;
     public static double i = 0;
 
     public static double d = 0.001;
@@ -40,7 +40,7 @@ public class Deposit extends Subsystem {
     }
     public PIDFController controller =
             new PIDFController
-                    (p, i, d,
+                    (0.009, 0, 0.001,
                             pos -> calculateFeedforward(),20);
 
     public String name = "deposit";
@@ -54,27 +54,27 @@ public class Deposit extends Subsystem {
 
     public Command getReady() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                1200, // TARGET POSITION, IN TICKS
+                (1200*0.37730685565), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }
     public Command toTransfer() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                1405, // TARGET POSITION, IN TICKS
+                (1420*0.37730685565), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
     public Command toScore() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                300.0, // TARGET POSITION, IN TICKS
+                (300.0*0.37730685565), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
     public Command toPickUp() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                1600.0, // TARGET POSITION, IN TICKS
+                (1600.0*0.37730685565), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }
@@ -86,17 +86,16 @@ public class Deposit extends Subsystem {
 
     @Override
     public void periodic(){
-        target = deposit.getMotor().getTargetPosition();
-        controller.setKP(p);
-        controller.setKI(i);
-        controller.setKD(d);
-
-
-        deposit.setPower(controller.calculate(deposit.getCurrentPosition(),target));
-
-        OpModeData.telemetry.addData("target",target);
-        OpModeData.telemetry.addData("pos",deposit.getCurrentPosition());
-
+//        controller.setKP(p);
+//        controller.setKI(i);
+//        controller.setKD(d);
+//
+//
+//        deposit.setPower(controller.calculate(deposit.getCurrentPosition(),target));
+//
+//        OpModeData.telemetry.addData("target",target);
+//        OpModeData.telemetry.addData("pos",deposit.getCurrentPosition());
+//
 
     }
 

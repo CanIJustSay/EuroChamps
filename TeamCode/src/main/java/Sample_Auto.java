@@ -44,6 +44,9 @@ public class Sample_Auto extends NextFTCOpMode {
     private final Pose grabFirst = new Pose(18, 121, Math.toRadians(0));
     private final Pose grabSecond = new Pose(18, 132, Math.toRadians(2));
     private final Pose grabThird = new Pose(25, 125, Math.toRadians(45));
+    private final Pose subPath = new Pose(70,125,Math.toRadians(-90));
+
+    private final Pose sub = new Pose(70,100,Math.toRadians(-90));
 
     private ElapsedTime elapsedtime;
 
@@ -58,6 +61,9 @@ public class Sample_Auto extends NextFTCOpMode {
     private PathChain scoreFirst;
     private PathChain scoreSecond;
     private PathChain scoreThird;
+    private PathChain subPickUp;
+    private PathChain subScore;
+    private PathChain subPathing;
 
     public void buildPaths() {
         scorePreload = follower.pathBuilder()
@@ -94,6 +100,15 @@ public class Sample_Auto extends NextFTCOpMode {
                 .addPath(new BezierLine(new Point(grabThird),new Point(basketPose)))
                 .setLinearHeadingInterpolation(grabThird.getHeading(),basketPose.getHeading())
                 .build();
+        subPathing = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(basketPose),new Point(subPath)))
+                .setLinearHeadingInterpolation(basketPose.getHeading(),subPath.getHeading())
+                .build();
+        subPickUp = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(subPath),new Point(sub)))
+                .setLinearHeadingInterpolation(subPath.getHeading(),sub.getHeading())
+                .build();
+
 
 
     }
@@ -103,34 +118,35 @@ public class Sample_Auto extends NextFTCOpMode {
 
                 //preload score
                 new ParallelGroup(
-                    RotationDeposit.INSTANCE.down(),
-                    Intake.INSTANCE.retract(),
-                    Deposit.INSTANCE.toScore(),
-                    ClawIntake.INSTANCE.open(),
-                    new FollowPath(scorePreload),
-                    ClawDeposit.INSTANCE.close(),
-                    Slides.INSTANCE.toSample()
+                        ClawIntake.INSTANCE.rotateHorizontal(),
+                        RotationDeposit.INSTANCE.down(),
+                        Intake.INSTANCE.retract(),
+                        Deposit.INSTANCE.toScore(),
+                        ClawIntake.INSTANCE.open(),
+                        new FollowPath(scorePreload),
+                        ClawDeposit.INSTANCE.close(),
+                        Slides.INSTANCE.toSample()
                 ),
 
                 //score
                 new SequentialGroup(
                     RotationDeposit.INSTANCE.up().thenWait(0.35),
-                    ClawDeposit.INSTANCE.open().thenWait(0.3),
+                    ClawDeposit.INSTANCE.open().thenWait(0.1),
                     new ParallelGroup(
                             RotationDeposit.INSTANCE.down(),
                             Deposit.INSTANCE.getReady()
                     )
                 ),
 
-                //grab first
+                //move first
                 new SequentialGroup(
                         new ParallelGroup(
-                                Slides.INSTANCE.toResting(),
                                 new FollowPath(moveToFirst,true),
+                                Slides.INSTANCE.toResting(),
                                 Intake.INSTANCE.extend(),
                                 ClawIntake.INSTANCE.open(),
                                 RotationIntake.INSTANCE.down()
-                        ).thenWait(0.5),
+                        ).thenWait(0.35),
                         ClawIntake.INSTANCE.close().thenWait(0.35)
                 ),
 
@@ -141,9 +157,9 @@ public class Sample_Auto extends NextFTCOpMode {
                                 RotationIntake.INSTANCE.up(),
                                 Intake.INSTANCE.retract()
 
-                        ).thenWait(0.5),
+                        ).thenWait(0.4),
                         Deposit.INSTANCE.toTransfer(),
-                        ClawDeposit.INSTANCE.close().thenWait(0.2),
+                        ClawDeposit.INSTANCE.close().thenWait(0.1),
                         ClawIntake.INSTANCE.open()
                 ),
 
@@ -156,7 +172,7 @@ public class Sample_Auto extends NextFTCOpMode {
                 //score
                 new SequentialGroup(
                         RotationDeposit.INSTANCE.up().thenWait(0.35),
-                        ClawDeposit.INSTANCE.open().thenWait(0.3),
+                        ClawDeposit.INSTANCE.open().thenWait(0.1),
                         new ParallelGroup(
                             RotationDeposit.INSTANCE.down(),
                             Deposit.INSTANCE.getReady()
@@ -173,7 +189,7 @@ public class Sample_Auto extends NextFTCOpMode {
                                 Intake.INSTANCE.extend(),
                                 ClawIntake.INSTANCE.open(),
                                 RotationIntake.INSTANCE.down()
-                        ).thenWait(0.5),
+                        ).thenWait(0.35),
                         ClawIntake.INSTANCE.close().thenWait(0.35)
                 ),
 
@@ -184,9 +200,9 @@ public class Sample_Auto extends NextFTCOpMode {
                                 RotationIntake.INSTANCE.up(),
                                 Intake.INSTANCE.retract()
 
-                        ).thenWait(0.5),
+                        ).thenWait(0.4),
                         Deposit.INSTANCE.toTransfer(),
-                        ClawDeposit.INSTANCE.close().thenWait(0.2),
+                        ClawDeposit.INSTANCE.close().thenWait(0.1),
                         ClawIntake.INSTANCE.open()
                 ),
 
@@ -196,25 +212,22 @@ public class Sample_Auto extends NextFTCOpMode {
                         Slides.INSTANCE.toSample()
                 ),
 
-                //score
+                //move to third
                 new SequentialGroup(
                         RotationDeposit.INSTANCE.up().thenWait(0.35),
-                        ClawDeposit.INSTANCE.open().thenWait(0.3),
+                        ClawDeposit.INSTANCE.open().thenWait(0.1)
+
+                ),
+                new ParallelGroup(
                         RotationDeposit.INSTANCE.down(),
                         Deposit.INSTANCE.getReady(),
-                        Slides.INSTANCE.toResting()
-                ),
-
-                //grab third
-                new SequentialGroup(
-                        new ParallelGroup(
-                                new FollowPath(moveToThird),
-                                ClawIntake.INSTANCE.open(),
-                                RotationIntake.INSTANCE.down()
-                        ).thenWait(0.5),
-                        Intake.INSTANCE.extend(),
-                        ClawIntake.INSTANCE.close().thenWait(0.5)
-                ),
+                        Slides.INSTANCE.toResting(),
+                        new FollowPath(moveToThird),
+                        ClawIntake.INSTANCE.open(),
+                        RotationIntake.INSTANCE.down()
+                ).thenWait(0.35),
+                Intake.INSTANCE.extend(),
+                ClawIntake.INSTANCE.close().thenWait(0.4),
 
                 //transfer
                 new SequentialGroup(
@@ -223,23 +236,32 @@ public class Sample_Auto extends NextFTCOpMode {
                                 RotationIntake.INSTANCE.up(),
                                 Intake.INSTANCE.retract()
 
-                        )
-                )
+                        ).thenWait(0.4),
+                        Deposit.INSTANCE.toTransfer(),
+                        ClawDeposit.INSTANCE.close().thenWait(0.1),
+                        ClawIntake.INSTANCE.open()
+                ),
 
-//                new ParallelGroup(
-//                        new FollowPath(scoreThird,true),
-//                        Deposit.INSTANCE.toScore(),
-//                        Slides.INSTANCE.toSample()
-//                ),
-//
-//                //score
-//                new SequentialGroup(
-//                        RotationDeposit.INSTANCE.up().thenWait(0.5),
-//                        ClawDeposit.INSTANCE.open().thenWait(0.3),
-//                        RotationDeposit.INSTANCE.down(),
-//                        Deposit.INSTANCE.getReady(),
-//                        Slides.INSTANCE.toResting()
-//                )
+                new ParallelGroup(
+                        new FollowPath(scoreThird,true),
+                        Deposit.INSTANCE.toScore(),
+                        Slides.INSTANCE.toSample()
+                ),
+
+                //score
+                new SequentialGroup(
+                        RotationDeposit.INSTANCE.up().thenWait(0.5),
+                        ClawDeposit.INSTANCE.open().thenWait(0.3),
+                        new ParallelGroup(
+                                RotationDeposit.INSTANCE.down(),
+                                Deposit.INSTANCE.getReady(),
+                                Slides.INSTANCE.toResting(),
+                                new FollowPath(subPathing,true)
+                        )
+
+                ),
+                new FollowPath(subPickUp,true)
+
         );
     };
 
