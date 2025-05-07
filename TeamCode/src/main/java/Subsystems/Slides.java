@@ -26,7 +26,7 @@ public class Slides extends Subsystem {
 
     public PIDFController controller =
             new PIDFController
-                    (0.02, 0.0, 0.0008, new StaticFeedforward(0.00 ),40);
+                    (0.02, 0.0, 0.001, new StaticFeedforward(0.00 ),40);
 
     public String left_name = "leftArm";
     public String right_name = "rightArm";

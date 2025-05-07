@@ -20,19 +20,30 @@ public class ClawIntake extends Subsystem {
 
     public Command open() {
         return new ServoToPosition(clawIntake, // SERVO TO MOVE
-                0.25, // POSITION TO MOVE TO
+                0.35, // POSITION TO MOVE TO
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
     public Command rotateVertical(){
         return new ServoToPosition(rotateIntake,
-                0,
+                0.8,
                 this);
     }
 
     public Command rotateHorizontal() {
         return new ServoToPosition(rotateIntake, // SERVO TO MOVE
                 0.5, // POSITION TO MOVE TO
+                this); // IMPLEMENTED SUBSYSTEM
+    }
+    public Command rotateDiagLeft(){
+        return new ServoToPosition(rotateIntake,
+                0.60,
+                this);
+    }
+
+    public Command rotateDiagRight() {
+        return new ServoToPosition(rotateIntake, // SERVO TO MOVE
+                0.3, // POSITION TO MOVE TO
                 this); // IMPLEMENTED SUBSYSTEM
     }
 

@@ -141,9 +141,9 @@ public class Command_Base_Drive extends NextFTCOpMode {
                             Deposit.INSTANCE.getReady(),
                             ClawDeposit.INSTANCE.flipUp(),
                             ClawDeposit.INSTANCE.open(),
-                            ClawIntake.INSTANCE.close().thenWait(0.5),
-                            RotationIntake.INSTANCE.up().thenWait(0.3),
-                            Intake.INSTANCE.retract(),
+                            ClawIntake.INSTANCE.close().thenWait(0.2),
+                            RotationIntake.INSTANCE.up().thenWait(0.2),
+                            Intake.INSTANCE.retract().thenWait(0.5),
                             Deposit.INSTANCE.toTransfer(),
                             ClawDeposit.INSTANCE.close().thenWait(0.1),
                             ClawIntake.INSTANCE.open().thenWait(0.1),
@@ -222,13 +222,26 @@ public class Command_Base_Drive extends NextFTCOpMode {
             );
         }
 
+        {
+            gamepadManager.getGamepad2().getRightBumper().setPressedCommand(
+                    () -> new SequentialGroup(
+                            ClawIntake.INSTANCE.rotateVertical()
+                    )
+            );
+            gamepadManager.getGamepad2().getLeftBumper().setPressedCommand(
+                    () -> new SequentialGroup(
+                            ClawIntake.INSTANCE.rotateHorizontal()
+                    )
+            );
+        }
+
 
     }
     @Override
     public void onUpdate(){
 
-        telemetry.addData("pos",Deposit.INSTANCE.deposit.getCurrentPosition());
-        telemetry.addData("target",Deposit.INSTANCE.controller.getTarget());
+        telemetry.addData("pos",Intake.INSTANCE.intake.getCurrentPosition());
+        telemetry.addData("target",Intake.INSTANCE.controller.getTarget());
 
         telemetry.update();
 

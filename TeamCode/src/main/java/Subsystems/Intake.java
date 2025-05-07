@@ -22,8 +22,8 @@ public class Intake extends Subsystem {
 
     public PIDFController controller =
             new PIDFController
-                    (0.026, 0.0, 0.001,
-                            new StaticFeedforward(0.01),25);
+                    (0.027, 0.0, 0.001,
+                            new StaticFeedforward(0.025),25);
 
     public String name = "linkage";
 
@@ -36,29 +36,29 @@ public class Intake extends Subsystem {
 
     }
 
+    public Command goTo(double position) {
+        return new RunToPosition(
+                intake,
+                position,
+                controller,
+                this
+        );
+    }
+
     public Command extend() {
-        return new RunToPosition(intake, // MOTOR TO MOVE
-                (270*0.7150827599), // TARGET POSITION, IN TICKS
-                controller, // CONTROLLER TO IMPLEMENT
-                this); // IMPLEMENTED SUBSYSTEM
+        return new RunToPosition(intake,
+                (270*0.7150827599),
+                controller,
+                this);
     }
 
     public Command retract() {
-        return new RunToPosition(intake, // MOTOR TO MOVE
-                0.0, // TARGET POSITION, IN TICKS
-                controller, // CONTROLLER TO IMPLEMENT
-                this); // IMPLEMENTED SUBSYSTEM
+        return new RunToPosition(intake,
+                0.0,
+                controller,
+                this);
     }
 
-
-    @Override
-    public Command getDefaultCommand() {
-        if (OpModeData.opModeType == OpModeData.OpModeType.TELEOP) {
-            return new HoldPosition(intake,controller,this);
-        } else {
-            return new NullCommand();
-        }
-    }
 
     @Override
     public void periodic(){

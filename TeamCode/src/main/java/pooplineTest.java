@@ -137,8 +137,8 @@ public class pooplineTest extends NextFTCOpMode {
             telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
             telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
             telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
-            telemetry.addData("Displacementx", freakyLine.dx);
-            telemetry.addData("Displacementy", freakyLine.dy);
+            telemetry.addData("Displacement x", freakyLine.dx);
+            telemetry.addData("Displacement y", freakyLine.dy);
             telemetry.addData("orientation(sexual)", freakyLine.orient);
 
 

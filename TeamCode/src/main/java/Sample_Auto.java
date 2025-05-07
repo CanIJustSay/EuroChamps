@@ -9,11 +9,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.rowanmcalpin.nextftc.core.command.Command;
 import com.rowanmcalpin.nextftc.core.command.groups.ParallelGroup;
 import com.rowanmcalpin.nextftc.core.command.groups.SequentialGroup;
+import com.rowanmcalpin.nextftc.core.command.utility.LambdaCommand;
 import com.rowanmcalpin.nextftc.core.command.utility.delays.Delay;
 import com.rowanmcalpin.nextftc.ftc.NextFTCOpMode;
 import com.rowanmcalpin.nextftc.pedro.FollowPath;
 import com.rowanmcalpin.nextftc.pedro.PedroData;
 import com.rowanmcalpin.nextftc.pedro.PedroOpMode;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import Subsystems.ClawDeposit;
 import Subsystems.ClawIntake;
@@ -38,17 +45,27 @@ public class Sample_Auto extends NextFTCOpMode {
                 Slides.INSTANCE
         );
     }
+    OpenCvWebcam webcam;
+    poopline freakyLine = new poopline();
+
+
+    double extension;
+    double lateralDisplacement;
+
+
 
     private final Pose startPose = new Pose(8.2, 60.0, Math.toRadians(0.0));
     private final Pose basketPose = new Pose(17, 130.2, Math.toRadians(-45));
     private final Pose grabFirst = new Pose(18, 121, Math.toRadians(0));
-    private final Pose grabSecond = new Pose(18, 132, Math.toRadians(2));
-    private final Pose grabThird = new Pose(25, 125, Math.toRadians(45));
+    private final Pose grabSecond = new Pose(18, 131.5, Math.toRadians(2));
+    private final Pose grabThird = new Pose(33.25, 117.5, Math.toRadians(63.5));
     private final Pose subPath = new Pose(70,125,Math.toRadians(-90));
+    private final Pose  sub = new Pose(70,95,Math.toRadians(-90));
 
-    private final Pose sub = new Pose(70,100,Math.toRadians(-90));
+    private Point detected = new Point(lateralDisplacement,95);
 
-    private ElapsedTime elapsedtime;
+
+
 
     private Follower follower;
 
@@ -64,6 +81,7 @@ public class Sample_Auto extends NextFTCOpMode {
     private PathChain subPickUp;
     private PathChain subScore;
     private PathChain subPathing;
+    private PathChain cameraMovement;
 
     public void buildPaths() {
         scorePreload = follower.pathBuilder()
@@ -119,6 +137,7 @@ public class Sample_Auto extends NextFTCOpMode {
                 //preload score
                 new ParallelGroup(
                         ClawIntake.INSTANCE.rotateHorizontal(),
+                        ClawDeposit.INSTANCE.flipUp(),
                         RotationDeposit.INSTANCE.down(),
                         Intake.INSTANCE.retract(),
                         Deposit.INSTANCE.toScore(),
@@ -146,7 +165,7 @@ public class Sample_Auto extends NextFTCOpMode {
                                 Intake.INSTANCE.extend(),
                                 ClawIntake.INSTANCE.open(),
                                 RotationIntake.INSTANCE.down()
-                        ).thenWait(0.35),
+                        ).thenWait(0.15),
                         ClawIntake.INSTANCE.close().thenWait(0.35)
                 ),
 
@@ -157,7 +176,7 @@ public class Sample_Auto extends NextFTCOpMode {
                                 RotationIntake.INSTANCE.up(),
                                 Intake.INSTANCE.retract()
 
-                        ).thenWait(0.4),
+                        ).thenWait(0.2),
                         Deposit.INSTANCE.toTransfer(),
                         ClawDeposit.INSTANCE.close().thenWait(0.1),
                         ClawIntake.INSTANCE.open()
@@ -189,7 +208,7 @@ public class Sample_Auto extends NextFTCOpMode {
                                 Intake.INSTANCE.extend(),
                                 ClawIntake.INSTANCE.open(),
                                 RotationIntake.INSTANCE.down()
-                        ).thenWait(0.35),
+                        ).thenWait(0.15),
                         ClawIntake.INSTANCE.close().thenWait(0.35)
                 ),
 
@@ -200,7 +219,7 @@ public class Sample_Auto extends NextFTCOpMode {
                                 RotationIntake.INSTANCE.up(),
                                 Intake.INSTANCE.retract()
 
-                        ).thenWait(0.4),
+                        ).thenWait(0.2),
                         Deposit.INSTANCE.toTransfer(),
                         ClawDeposit.INSTANCE.close().thenWait(0.1),
                         ClawIntake.INSTANCE.open()
@@ -224,19 +243,21 @@ public class Sample_Auto extends NextFTCOpMode {
                         Slides.INSTANCE.toResting(),
                         new FollowPath(moveToThird),
                         ClawIntake.INSTANCE.open(),
+                        ClawIntake.INSTANCE.rotateDiagRight(),
                         RotationIntake.INSTANCE.down()
                 ).thenWait(0.35),
                 Intake.INSTANCE.extend(),
-                ClawIntake.INSTANCE.close().thenWait(0.4),
+                ClawIntake.INSTANCE.close().thenWait(0.2),
 
                 //transfer
                 new SequentialGroup(
                         //score the preload, bring back deposit and slides
                         new ParallelGroup(
                                 RotationIntake.INSTANCE.up(),
+                                ClawIntake.INSTANCE.rotateHorizontal(),
                                 Intake.INSTANCE.retract()
 
-                        ).thenWait(0.4),
+                        ).thenWait(0.2),
                         Deposit.INSTANCE.toTransfer(),
                         ClawDeposit.INSTANCE.close().thenWait(0.1),
                         ClawIntake.INSTANCE.open()
@@ -256,12 +277,45 @@ public class Sample_Auto extends NextFTCOpMode {
                                 RotationDeposit.INSTANCE.down(),
                                 Deposit.INSTANCE.getReady(),
                                 Slides.INSTANCE.toResting(),
+                                ClawIntake.INSTANCE.rotateHorizontal(),
                                 new FollowPath(subPathing,true)
                         )
 
                 ),
-                new FollowPath(subPickUp,true)
 
+                new FollowPath(subPickUp,true).thenWait(1),
+                new SequentialGroup(
+                        new ParallelGroup(
+
+                                //translate extension into a pid target
+
+                                //change extension amount based off camera
+
+                                //translate x displacement into field coordinates and put that as "lateralDisplacement
+
+                                //Intake.INSTANCE.goTo(extension),
+
+                                //followPath or movement while extending probably
+
+                                //lateralMovement(detected),
+
+                                ClawIntake.INSTANCE.open(),
+                                RotationIntake.INSTANCE.down()
+                        ).thenWait(0.35),
+                        ClawIntake.INSTANCE.close().thenWait(0.35)
+                ),
+                new SequentialGroup(
+                //score the preload, bring back deposit and slides
+                        new ParallelGroup(
+                                RotationIntake.INSTANCE.up(),
+                                Intake.INSTANCE.retract()
+
+                        ).thenWait(0.2),
+                        Deposit.INSTANCE.toTransfer(),
+                        ClawDeposit.INSTANCE.close().thenWait(0.1),
+                        ClawIntake.INSTANCE.open()
+
+                )
         );
     };
 
@@ -275,26 +329,77 @@ public class Sample_Auto extends NextFTCOpMode {
         follower.setStartingPose(new Pose(8.2, 111.8, 0));
         buildPaths();
 
-        elapsedtime = new ElapsedTime();
-        elapsedtime.reset();
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "logi"), cameraMonitorViewId);
+        webcam.setPipeline(freakyLine);
+
+        webcam.setMillisecondsPermissionTimeout(5000);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened() {
+                /*
+                 * Tell the webcam to start streaming images to us! Note that you must make sure
+                 * the resolution you specify is supported by the camera. If it is not, an exception
+                 * will be thrown.
+                 *
+                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
+                 * supports streaming from the webcam in the uncompressed YUV image format. This means
+                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
+                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
+                 *
+                 * Also, we specify the rotation that the webcam is used in. This is so that the image
+                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
+                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
+                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
+                 * away from the user.
+                 */
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+
+
     }
 
     @Override
     public void onStartButtonPressed() {
+
         runAuto().invoke();
 
-
-        //Deposit.INSTANCE.toScore().invoke();
     }
     @Override
     public void onUpdate(){
-        telemetry.addData("Loop Times", elapsedtime.milliseconds());
 
         telemetry.addData("slides pos", Slides.INSTANCE.arm_motors.getCurrentPosition());
+        telemetry.addData("deposit pos", Deposit.INSTANCE.deposit.getCurrentPosition());
+        telemetry.addData("intake pos", Intake.INSTANCE.intake.getCurrentPosition());
+
+
+        telemetry.addData("Displacement x", freakyLine.dx);
+
+        telemetry.addData("Displacement y", freakyLine.dy);
+
+        telemetry.addData("orientation(sexual)", freakyLine.orient);
+
+
 
         telemetry.update();
-        elapsedtime.reset();
+
 
         follower.update();
     }
+    public Command lateralMovement(Point point) {
+        return new LambdaCommand()
+                .setStart(() -> follower.holdPoint(point,Math.toRadians(-90)))
+                .setIsDone(() -> follower.atPoint(point, 0.25, 0.25));
+    }
+
 }
