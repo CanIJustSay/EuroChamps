@@ -61,7 +61,7 @@ public class Slides extends Subsystem {
 
     public Command toChamber() {
         return new RunToPosition(arm_motors, // MOTOR TO MOVE
-                500.0, // TARGET POSITION, IN TICKS
+                1500.0, // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }

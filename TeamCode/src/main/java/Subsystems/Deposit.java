@@ -54,27 +54,27 @@ public class Deposit extends Subsystem {
 
     public Command getReady() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                (1200*0.37730685565), // TARGET POSITION, IN TICKS
+                (-100), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }
     public Command toTransfer() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                (1420*0.37730685565), // TARGET POSITION, IN TICKS
+                (0), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
     public Command toScore() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                (300.0*0.37730685565), // TARGET POSITION, IN TICKS
+                (-400), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
     public Command toPickUp() {
         return new RunToPosition(deposit, // MOTOR TO MOVE
-                (1600.0*0.37730685565), // TARGET POSITION, IN TICKS
+                (50), // TARGET POSITION, IN TICKS
                 controller, // CONTROLLER TO IMPLEMENT
                 this); // IMPLEMENTED SUBSYSTEM
     }

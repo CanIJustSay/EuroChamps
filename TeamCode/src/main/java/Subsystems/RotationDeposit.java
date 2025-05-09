@@ -27,14 +27,20 @@ public class RotationDeposit extends Subsystem {
         return new MultipleServosToSeperatePositions(Map.of(
                 depoLeft, 0.0,
                 depoRight,1.0
-        )); // IMPLEMENTED SUBSYSTEM
+        ));
     }
 
     public Command up() {
         return new MultipleServosToSeperatePositions(Map.of(
                 depoLeft, 0.45,
                 depoRight,0.55
-        )); // IMPLEMENTED SUBSYSTEM
+        ));
+    }
+    public Command mid() {
+        return new MultipleServosToSeperatePositions(Map.of(
+                depoLeft, 0.25,
+                depoRight,0.75
+        ));
     }
 
 

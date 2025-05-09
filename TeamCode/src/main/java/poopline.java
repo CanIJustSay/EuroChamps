@@ -1,4 +1,6 @@
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -6,10 +8,12 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Config
 public class poopline extends OpenCvPipeline {
 
-    public Scalar lowerYCrCb = new Scalar(171.4, 0, 0, 0.0);
-    public Scalar upperYCrCb = new Scalar(255.0, 255.0, 255.0, 0.0);
+    public static Scalar lowerYCrCb = new Scalar(20, 100, 100, 0.0);
+    public static Scalar upperYCrCb = new Scalar(35, 255.0, 255.0, 0.0);
     public double dx = 0;
     public double dy = 0;
     public String orient = "none";
@@ -25,17 +29,18 @@ public class poopline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         // Blur makes it easier to read so we dont get freaky double box
-        Imgproc.GaussianBlur(input, blurred, new Size(5, 5), 0);
+        Imgproc.GaussianBlur(input, blurred, new Size(3, 3), 0);
 
         // Convert to YCrCb
-        Imgproc.cvtColor(blurred, ycrcb, Imgproc.COLOR_RGB2YCrCb);
+        Imgproc.cvtColor(blurred, ycrcb, Imgproc.COLOR_RGB2HSV);
 
         // Threshold
         Core.inRange(ycrcb, lowerYCrCb, upperYCrCb, mask);
 
-        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2, 2));
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
         Imgproc.morphologyEx(mask, morphed, Imgproc.MORPH_CLOSE, kernel);
         Imgproc.morphologyEx(morphed, morphed, Imgproc.MORPH_OPEN, kernel);
+
 
         // Find contours
         contours.clear();
@@ -43,7 +48,7 @@ public class poopline extends OpenCvPipeline {
         RotatedRect closestRotatedRect = null;
         Point closestSampleCenter = null;
         double closestDistance = Double.MAX_VALUE;
-        Imgproc.findContours(morphed, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(morphed, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
         for (MatOfPoint contour : contours) {
             MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
@@ -98,6 +103,7 @@ public class poopline extends OpenCvPipeline {
                     Imgproc.line(input, rectPoints[i], rectPoints[(i + 1) % 4], new Scalar(0, 255, 0), 2);
                 }
 
+
                 String label = "blue sample (" + orientationLabel + ")";
                 Imgproc.putText(input, label, rotatedRect.center,
                         Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 255, 255), 1);
@@ -134,9 +140,14 @@ public class poopline extends OpenCvPipeline {
             }
         
             // Combined label
-            String label = String.format("dx: %.0f, dy: %.0f, %s", dx, dy, orientationLabel);
-            Imgproc.putText(input, label, new Point(frameCenter.x + 10, frameCenter.y - 10),
+            String label = String.format("dx: %.0f, dy: %.0f, %s", dx, (-dy + 100), orientationLabel);
+            Imgproc.putText(input, label, new Point(frameCenter.x - 40, frameCenter.y),
                     Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 255), 1);
+        }
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return input;
     }

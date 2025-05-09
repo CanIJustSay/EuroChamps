@@ -1,4 +1,5 @@
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,7 +26,7 @@ import Subsystems.Intake;
 import Subsystems.RotationDeposit;
 import Subsystems.RotationIntake;
 import Subsystems.Slides;
-
+@Config
 @TeleOp(name = "Camera Test")
 public class Camera_Test extends NextFTCOpMode {
 
@@ -42,7 +43,8 @@ public class Camera_Test extends NextFTCOpMode {
         );
     }
     OpenCvWebcam webcam;
-
+    public static double multValue = -0.856445;
+    public static double intercept = 100;
     poopline freakyLine = new poopline();
 
 
@@ -58,6 +60,7 @@ public class Camera_Test extends NextFTCOpMode {
 
 
         webcam.setPipeline(freakyLine);
+
 
 
 
@@ -112,16 +115,6 @@ public class Camera_Test extends NextFTCOpMode {
     public void onStartButtonPressed() {
 
 
-        telemetry.addData("Frame Count", webcam.getFrameCount());
-        telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
-        telemetry.addData("Total frame time ms", webcam.getTotalFrameTimeMs());
-        telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
-        telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
-        telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
-        telemetry.addData("Displacementx", freakyLine.dx);
-        telemetry.addData("Displacementy", freakyLine.dy);
-        telemetry.addData("orientation(sexual)", freakyLine.orient);
-
 
 
 
@@ -130,7 +123,11 @@ public class Camera_Test extends NextFTCOpMode {
 
         ClawIntake.INSTANCE.open().invoke();
 
-        ClawIntake.INSTANCE.rotateHorizontal();
+        RotationIntake.INSTANCE.down().invoke();
+
+
+
+
 
 
 
@@ -138,10 +135,32 @@ public class Camera_Test extends NextFTCOpMode {
     }
     @Override
     public void onUpdate(){
-
-        telemetry.addData("pos",Deposit.INSTANCE.deposit.getCurrentPosition());
-        telemetry.addData("target",Deposit.INSTANCE.controller.getTarget());
+        double convertvalue = ((-freakyLine.dy) + 100) * multValue + intercept;
+        telemetry.addData("Displacement x", freakyLine.dx);
+        telemetry.addData("Displacement y", (-freakyLine.dy) + 100);
+        telemetry.addData("orientation(sexual)", freakyLine.orient);
+        telemetry.addData("linkage pos", Intake.INSTANCE.intake.getCurrentPosition());
+        telemetry.addData("converted", convertvalue);
         telemetry.update();
+
+        if (freakyLine.orient == "horizontal") {
+            ClawIntake.INSTANCE.rotateVertical().invoke();
+        }
+        else if (freakyLine.orient == "diagonal right") {
+            ClawIntake.INSTANCE.rotateDiagRight().invoke();
+        }
+        else if (freakyLine.orient == "vertical") {
+            ClawIntake.INSTANCE.rotateHorizontal().invoke();
+        }
+        else if (freakyLine.orient == "diagonal left") {
+            ClawIntake.INSTANCE.rotateDiagLeft().invoke();
+        }
+        else {
+            ClawIntake.INSTANCE.rotateHorizontal().invoke();
+        }
+
+        Intake.INSTANCE.goTo(convertvalue).invoke();
+
 
     }
 }
