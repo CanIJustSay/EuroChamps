@@ -22,7 +22,7 @@ public class ClawDeposit extends Subsystem {
 
     public Command open() {
         return new ServoToPosition(clawDeposit, // SERVO TO MOVE
-                0.25, // POSITION TO MOVE TO
+                0.32, // POSITION TO MOVE TO
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
@@ -35,12 +35,12 @@ public class ClawDeposit extends Subsystem {
 
     public Command flipUp() {
         return new ServoToPosition(rotateDeposit,
-                0.5,
+                0,
                 this);
     }
     public Command flipDown() {
         return new ServoToPosition(rotateDeposit,
-                0,
+                0.66,
                 this);
     }
 

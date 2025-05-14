@@ -38,8 +38,14 @@ public class RotationDeposit extends Subsystem {
     }
     public Command mid() {
         return new MultipleServosToSeperatePositions(Map.of(
-                depoLeft, 0.25,
-                depoRight,0.75
+                depoLeft, 0.26,
+                depoRight,0.74
+        ));
+    }
+    public Command scoreSpeci() {
+        return new MultipleServosToSeperatePositions(Map.of(
+                depoLeft, 0.21,
+                depoRight,0.79
         ));
     }
 

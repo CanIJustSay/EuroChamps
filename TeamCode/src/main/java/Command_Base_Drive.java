@@ -59,7 +59,6 @@ public class Command_Base_Drive extends NextFTCOpMode {
         backRightMotor = new MotorEx(backRightName);
         frontRightMotor = new MotorEx(frontRightName);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
 
@@ -67,10 +66,10 @@ public class Command_Base_Drive extends NextFTCOpMode {
         ClawIntake.INSTANCE.open().invoke();
         RotationIntake.INSTANCE.up().invoke();
         RotationDeposit.INSTANCE.down().invoke();
-        ClawDeposit.INSTANCE.open().invoke();
+        ClawDeposit.INSTANCE.close().invoke();
         Intake.INSTANCE.retract().invoke();
         Deposit.INSTANCE.getReady().invoke();
-        ClawDeposit.INSTANCE.flipUp().invoke();
+        ClawDeposit.INSTANCE.flipDown().invoke();
         ClawIntake.INSTANCE.rotateHorizontal().invoke();
 
 
@@ -240,10 +239,6 @@ public class Command_Base_Drive extends NextFTCOpMode {
     @Override
     public void onUpdate(){
 
-        telemetry.addData("pos",Intake.INSTANCE.intake.getCurrentPosition());
-        telemetry.addData("target",Intake.INSTANCE.controller.getTarget());
-
-        telemetry.update();
 
     }
 }

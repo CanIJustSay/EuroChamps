@@ -43,12 +43,10 @@ public class Camera_Test extends NextFTCOpMode {
         );
     }
     OpenCvWebcam webcam;
-    public static double multValue = -0.856445;
-    public static double intercept = 100;
-    poopline freakyLine = new poopline();
+
+    testPipeline freakyLine = new testPipeline();
 
 
-    public Command driverControlled;
 
     @Override
     public void onInit() {
@@ -97,14 +95,6 @@ public class Camera_Test extends NextFTCOpMode {
         });
 
 
-        ClawIntake.INSTANCE.open().invoke();
-        RotationIntake.INSTANCE.up().invoke();
-        RotationDeposit.INSTANCE.down().invoke();
-        ClawDeposit.INSTANCE.open().invoke();
-        Intake.INSTANCE.retract().invoke();
-        Deposit.INSTANCE.getReady().invoke();
-        ClawDeposit.INSTANCE.flipUp().invoke();
-
 
 
         // Change your motor directions to suit your robot.
@@ -114,52 +104,18 @@ public class Camera_Test extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
 
-
-
-
-
         telemetry.update();
-
-
-        ClawIntake.INSTANCE.open().invoke();
-
-        RotationIntake.INSTANCE.down().invoke();
-
-
-
-
-
-
 
 
     }
     @Override
     public void onUpdate(){
-        double convertvalue = ((-freakyLine.dy) + 100) * multValue + intercept;
-        telemetry.addData("Displacement x", freakyLine.dx);
-        telemetry.addData("Displacement y", (-freakyLine.dy) + 100);
-        telemetry.addData("orientation(sexual)", freakyLine.orient);
-        telemetry.addData("linkage pos", Intake.INSTANCE.intake.getCurrentPosition());
-        telemetry.addData("converted", convertvalue);
+        telemetry.addData("Displacement x", freakyLine.xDisplacement);
+        telemetry.addData("Displacement y", (freakyLine.yDisplacement));
+        telemetry.addData("orientation(sexual)", freakyLine.orientationAngle);
+
         telemetry.update();
 
-        if (freakyLine.orient == "horizontal") {
-            ClawIntake.INSTANCE.rotateVertical().invoke();
-        }
-        else if (freakyLine.orient == "diagonal right") {
-            ClawIntake.INSTANCE.rotateDiagRight().invoke();
-        }
-        else if (freakyLine.orient == "vertical") {
-            ClawIntake.INSTANCE.rotateHorizontal().invoke();
-        }
-        else if (freakyLine.orient == "diagonal left") {
-            ClawIntake.INSTANCE.rotateDiagLeft().invoke();
-        }
-        else {
-            ClawIntake.INSTANCE.rotateHorizontal().invoke();
-        }
-
-        Intake.INSTANCE.goTo(convertvalue).invoke();
 
 
     }

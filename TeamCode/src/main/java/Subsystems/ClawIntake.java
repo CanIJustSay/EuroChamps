@@ -20,7 +20,7 @@ public class ClawIntake extends Subsystem {
 
     public Command open() {
         return new ServoToPosition(clawIntake, // SERVO TO MOVE
-                0.35, // POSITION TO MOVE TO
+                0.37, // POSITION TO MOVE TO
                 this); // IMPLEMENTED SUBSYSTEM
     }
 
